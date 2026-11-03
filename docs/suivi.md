@@ -8,7 +8,7 @@
 
 À lire en début de séance, à mettre à jour en fin de séance (étapes + journal).
 
-Références : [énoncé](enonce-travail-etude.md) · [ADR-001](ADR-001.md) · [PoC Plan](poc-plan.md) · [scénarios de recette](recette/scenarios.md) · [AGENTS.md](../AGENTS.md)
+Références : [énoncé](enonce-travail-etude.md) · [ADR-001](ADR-001.md) · [PoC Plan](poc-plan.md) · [scénarios de recette](recette/scenarios.md) · [AGENTS.md](../AGENTS.md) · **recette publiée : https://claude.ai/artifact/CT7gqqh1kWYKE6sBEiSqD2** (privée : à partager depuis le menu Partager)
 
 Statuts : ⬜ à faire · 🔄 en cours · ✅ terminé · ⏸ bloqué
 
@@ -60,14 +60,14 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | E6b | Option C hybride : chemin critique synchrone, Shipping et Notification par événements | E4, E5 | | recette C-1 à C-3 | ✅ construit (recette C à rejouer) |
 | E7 | Observabilité : traces A, B, C (contexte dans les en-têtes AMQP), tableau de bord filtré par option, scénario, passage | E4, E5, E6b | | recette OBS-1 à OBS-3 | ✅ construit (recette OBS à rejouer) |
 | E8 | Banc d'essai : k6 S1 à S5, `run.sh`, `campaign.sh`, audit, `results/runs.csv` | E4, E5, E6b | | recette BANC-1 | ✅ construit (recette BANC-1 à rejouer) |
-| E9 | Recette : captures automatiques, page HTML publiée (v1 : livrables E3-E8) | E7, E8 | | recette BANC-2 ; page publiée | 🔄 captures et page générées ; publication en cours |
-| E10 | **Point d'arrêt (mer. 04/11)** : passage court de chaque scénario sur A, B et C | E6, E6b, E9 | | sinon réduire le périmètre (ci-dessous) | 🔄 répétition courte du 02/11 en cours |
+| E9 | Recette : captures automatiques, page HTML publiée (v1 : livrables E3-E8) | E7, E8 | | recette BANC-2 ; page publiée | ✅ publiée le 02/11 (v1 : répétition générale) |
+| E10 | **Point d'arrêt (mer. 04/11)** : passage court de chaque scénario sur A, B et C | E6, E6b, E9 | | sinon réduire le périmètre (ci-dessous) | ✅ 02/11 : 17 passages courts, aucun échec |
 | E11 | Campagne : S1 à S4 × A, B, C et S5 × B, 3 répétitions (≈ 1 h 30 par répétition ; skill `campagne-mesures`) | E10 | | résultats bruts versionnés, aucun passage invalide non expliqué | ⬜ |
 | E12 | Résultats proposés : captures du passage médian, graphiques, onglet « Résultats » de la recette | E11 | | recette RES-S1 à RES-S5 | ⬜ |
 | E13 | Analyse et matrice de décision, **par l'équipe** ; ADR-001 final, limites, section « utilisation de l'IA » | E12 | équipe | recette DEC-1, DEC-2 ; skill `revue-adr` passée | ⬜ |
 | E14 | Relecture croisée et remise | E13 | équipe | remis | ⬜ |
 
-**Si E10 n'est pas atteint le mercredi :** observabilité réduite à un `correlationId` dans les logs, S5 limité à Payment et Inventory, 2 répétitions au lieu de 3, pas de vidéo, S2 sur C en une seule répétition.
+*(Sans objet : E10 atteint le 02/11.)* **Si E10 n'est pas atteint le mercredi :** observabilité réduite à un `correlationId` dans les logs, S5 limité à Payment et Inventory, 2 répétitions au lieu de 3, pas de vidéo, S2 sur C en une seule répétition.
 
 ## Corrections proposées pour l'ADR-001 (E2)
 
@@ -88,3 +88,4 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | 02/11 | E3 à E8 construits d'un trait (seule session qui code, après passation de la session `poc-rest-ecommerce-4d`) : services A, B, C ; `compose.yml` ; supervision ; k6 S1 à S5 et S4b ; `run.sh`, `campaign.sh`, audit, `report-run` ; tableau de bord ; captures ; page de recette | trace B vérifiée : une seule trace à travers le broker (OBS-2) ; défaut trouvé et corrigé : k6 écrasait l'étiquette `scenario` (filtre Grafana vide) |
 | 02/11 | E10 : répétition générale courte (durées × 0,25, 1 passage) de S1 à S4, S4b sur A, B, C et S5 sur B | voir l'onglet « Résultats » de la recette ; **ce ne sont pas des preuves** |
 | 02/11 | Commit `eec1236` du travail en cours ; corrections des documents proposées par Marc : définitions alignées sur D12, C ajoutée dans D1, D3 et D5, dépendance E6b de E8, E9 et E10 remis « en cours » (marqués terminés trop tôt) | l'URL de la recette sera ajoutée aux références à la publication |
+| 02/11 | E10 et E9 : 17 passages courts réussis (A, B, C × S1 à S4 et S4b ; B × S5-off, S5-on) ; 92 captures relues par échantillon ; recette publiée | constats à discuter en recette, **pas des preuves** : (1) A-S2 et C-S2, k6 n'a pas envoyé 15 738 et 13 290 commandes (plafond de 2 000 VUs atteint ?) : validité de S2 à trancher avant la campagne ; (2) A-S3 et C-S3, environ 1 700 commandes payées mais rejetées : Order abandonne après 5 s alors que Payment finit par autoriser (paiement « fantôme ») ; (3) A-S4 et C-S4, 3 remboursements impossibles car Payment était en panne ; (4) B-S5-off, 2 438 effets en double, B-S5-on, 0 |

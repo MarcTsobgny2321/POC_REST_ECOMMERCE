@@ -205,7 +205,7 @@ function el(tag, attrs = {}, ...children) {
     else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
     else node.setAttribute(k, v === true ? '' : v);
   }
-  for (const c of children.flat()) if (c !== null && c !== undefined) node.append(c);
+  for (const c of children.flat(Infinity)) if (c !== null && c !== undefined && c !== false) node.append(c);
   return node;
 }
 
