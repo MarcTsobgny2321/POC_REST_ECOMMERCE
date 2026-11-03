@@ -25,7 +25,7 @@ Décision visée : [ADR-001](ADR-001.md). Énoncé : [§5 à §10](enonce-travai
 | R4 | Fiabilité | 0 commande confirmée sans paiement autorisé **et** stock réservé (audit) |
 | R5 | Observabilité | une commande reconstruite de bout en bout à partir de son identifiant |
 
-**Définitions.** *Acceptation* : temps entre l'envoi de la commande et la première réponse HTTP (201 en A, 202 en B), mesuré par k6. *Complétion* : temps entre la réception par Order et l'état final (confirmée ou rejetée), mesuré par Order. En A, les deux sont presque égales. *Erreur non prévue* : 5xx, délai dépassé, erreur réseau ou statut inattendu ; un refus de carte (402) ou un stock insuffisant (409) est une réponse **prévue**.
+**Définitions.** *Acceptation* : temps entre l'envoi de la commande et la première réponse HTTP (201 en A et C, 202 en B), mesuré par k6. *Complétion* : de la réception par Order jusqu'à l'issue connue et, si la commande est confirmée, jusqu'à la demande d'expédition (décision D12), mesurée par Order de la même façon pour A, B et C. En A, acceptation et complétion sont presque égales ; en C, le 201 arrive avant la fin du workflow ; la notification n'est pas comptée. *Erreur non prévue* : 5xx, délai dépassé, erreur réseau ou statut inattendu ; un refus de carte (402) ou un stock insuffisant (409) est une réponse **prévue**.
 
 ## 3. Hypothèses → scénarios → métriques
 

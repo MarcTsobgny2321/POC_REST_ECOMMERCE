@@ -29,11 +29,11 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 
 | # | Décision | Statut | Raison |
 |---|---|---|---|
-| D1 | Même code par service, mode choisi par `OPTION=A\|B` | Proposé | seul le transport diffère (O2) |
+| D1 | Même code par service, mode choisi par `OPTION=A\|B\|C` | Proposé | seul le transport diffère (O2) |
 | D2 | B en chorégraphie avec RabbitMQ (comme l'ADR) | À valider | broker léger, déjà prévu par l'ADR |
-| D3 | Concurrence de référence 100 : pool HTTP en A, prefetch en B | À valider | même capacité par service appelé (O2) |
+| D3 | Concurrence de référence 100 : pool HTTP pour les appels synchrones (A, partie synchrone de C), prefetch pour les événements (B, partie événementielle de C) | À valider | même capacité par service appelé (O2) |
 | D4 | B : 202 renvoyé après confirmation du broker | Proposé | « accepté » = enregistré durablement |
-| D5 | Pannes S3 et S4 injectées par une route d'administration de Payment, identique en A et B | Proposé | plus simple que Toxiproxy (Docconnect), même panne pour les deux options |
+| D5 | Pannes injectées par une route d'administration, identique en A, B et C : Payment (S3, S4) et Shipping (S4b) | Proposé | plus simple que Toxiproxy (Docconnect), même panne pour les deux options |
 | D6 | Supervision : Prometheus, Tempo, Grafana, cAdvisor (versions de Docconnect) ; ni Loki ni Alertmanager | Proposé | la trace suffit à reconstruire une commande (O4) |
 | D7 | Docker en contexte `default` (moteur natif, 12 CPU, 16 Go) ; k6 en conteneur | Proposé | Docker Desktop n'a que 3,9 Go ; k6 n'est pas installé |
 | D8 | Captures Grafana et traces **automatiques** (Playwright, mode kiosque), passage **médian**, axes fixes | Proposé | reproductibles, pas de choix du « plus beau » passage |
@@ -51,7 +51,7 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 
 | # | Étape | Dépend de | Responsable | Terminée quand | Statut |
 |---|---|---|---|---|---|
-| E1 | Cadrage : énoncé, ADR-001 candidat, décisions D1-D10, responsables | — | équipe | responsables attribués ; décisions validées en recette (E9) | 🔄 |
+| E1 | Cadrage : énoncé, ADR-001 candidat, décisions D1-D15, responsables | — | équipe | responsables attribués ; décisions validées en recette (E9) | 🔄 |
 | E2 | Prérequis : `AGENTS.md`, suivi, brouillon du PoC Plan, scénarios de recette, skills | E1 | Marc + IA | fichiers en place ; PoC Plan validé en recette (E9), **avant la campagne** | ✅ (validation en E9) |
 | E3 | Socle : `docker compose` (1 conteneur par service), Prometheus, Tempo, Grafana, cAdvisor | E1 | | la stack démarre ; les métriques des 5 services remontent | ✅ construit (recette SOC à rejouer) |
 | E4 | Option A complétée : identifiants uniques, pool, remboursement, pannes S3/S4 | E3 | | recette A-1 à A-5 | ✅ construit (recette A à rejouer) |
@@ -59,9 +59,9 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | E6 | Robustesse B : panne, idempotence, doublons (S5) | E5 | | recette B-4 à B-6 | ✅ construit (recette B-4 à B-6 à rejouer) |
 | E6b | Option C hybride : chemin critique synchrone, Shipping et Notification par événements | E4, E5 | | recette C-1 à C-3 | ✅ construit (recette C à rejouer) |
 | E7 | Observabilité : traces A, B, C (contexte dans les en-têtes AMQP), tableau de bord filtré par option, scénario, passage | E4, E5, E6b | | recette OBS-1 à OBS-3 | ✅ construit (recette OBS à rejouer) |
-| E8 | Banc d'essai : k6 S1 à S5, `run.sh`, `campaign.sh`, audit, `results/runs.csv` | E4, E5 | | recette BANC-1 | ✅ construit (recette BANC-1 à rejouer) |
-| E9 | Recette : captures automatiques, page HTML publiée (v1 : livrables E3-E8) | E7, E8 | | recette BANC-2 ; page publiée | ✅ page publiée (lien ci-dessous) |
-| E10 | **Point d'arrêt (mer. 04/11)** : passage court de chaque scénario sur A, B et C | E6, E6b, E9 | | sinon réduire le périmètre (ci-dessous) | ✅ répétition courte du 02/11 (en avance) |
+| E8 | Banc d'essai : k6 S1 à S5, `run.sh`, `campaign.sh`, audit, `results/runs.csv` | E4, E5, E6b | | recette BANC-1 | ✅ construit (recette BANC-1 à rejouer) |
+| E9 | Recette : captures automatiques, page HTML publiée (v1 : livrables E3-E8) | E7, E8 | | recette BANC-2 ; page publiée | 🔄 captures et page générées ; publication en cours |
+| E10 | **Point d'arrêt (mer. 04/11)** : passage court de chaque scénario sur A, B et C | E6, E6b, E9 | | sinon réduire le périmètre (ci-dessous) | 🔄 répétition courte du 02/11 en cours |
 | E11 | Campagne : S1 à S4 × A, B, C et S5 × B, 3 répétitions (≈ 1 h 30 par répétition ; skill `campagne-mesures`) | E10 | | résultats bruts versionnés, aucun passage invalide non expliqué | ⬜ |
 | E12 | Résultats proposés : captures du passage médian, graphiques, onglet « Résultats » de la recette | E11 | | recette RES-S1 à RES-S5 | ⬜ |
 | E13 | Analyse et matrice de décision, **par l'équipe** ; ADR-001 final, limites, section « utilisation de l'IA » | E12 | équipe | recette DEC-1, DEC-2 ; skill `revue-adr` passée | ⬜ |
@@ -87,3 +87,4 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | 02/11 | Décision D11 : l'option C (hybride) est construite et mesurée | ajout de E6b, de H7 et du scénario facultatif S4b (Shipping indisponible) |
 | 02/11 | E3 à E8 construits d'un trait (seule session qui code, après passation de la session `poc-rest-ecommerce-4d`) : services A, B, C ; `compose.yml` ; supervision ; k6 S1 à S5 et S4b ; `run.sh`, `campaign.sh`, audit, `report-run` ; tableau de bord ; captures ; page de recette | trace B vérifiée : une seule trace à travers le broker (OBS-2) ; défaut trouvé et corrigé : k6 écrasait l'étiquette `scenario` (filtre Grafana vide) |
 | 02/11 | E10 : répétition générale courte (durées × 0,25, 1 passage) de S1 à S4, S4b sur A, B, C et S5 sur B | voir l'onglet « Résultats » de la recette ; **ce ne sont pas des preuves** |
+| 02/11 | Commit `eec1236` du travail en cours ; corrections des documents proposées par Marc : définitions alignées sur D12, C ajoutée dans D1, D3 et D5, dépendance E6b de E8, E9 et E10 remis « en cours » (marqués terminés trop tôt) | l'URL de la recette sera ajoutée aux références à la publication |
