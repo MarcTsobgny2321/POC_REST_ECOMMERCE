@@ -8,7 +8,7 @@
 
 À lire en début de séance, à mettre à jour en fin de séance (étapes + journal).
 
-Références : [énoncé](enonce-travail-etude.md) · [ADR-001](ADR-001.md) · [PoC Plan](poc-plan.md) · [scénarios de recette](recette/scenarios.md) · [AGENTS.md](../AGENTS.md) · **recette publiée : https://claude.ai/artifact/CT7gqqh1kWYKE6sBEiSqD2** (privée : à partager depuis le menu Partager)
+Références : [énoncé](enonce-travail-etude.md) · [ADR-001](ADR-001.md) · [PoC Plan](poc-plan.md) · [scénarios de recette](recette/scenarios.md) · [protocole de campagne](campagne.md) · **pull request : https://github.com/fturibiof/POC_REST_ECOMMERCE/pull/1** (depuis le fork `MarcTsobgny2321/POC_REST_ECOMMERCE`) · [AGENTS.md](../AGENTS.md) · **recette publiée : https://claude.ai/artifact/CT7gqqh1kWYKE6sBEiSqD2** (privée : à partager depuis le menu Partager)
 
 Statuts : ⬜ à faire · 🔄 en cours · ✅ terminé · ⏸ bloqué
 
@@ -62,7 +62,7 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | E8 | Banc d'essai : k6 S1 à S5, `run.sh`, `campaign.sh`, audit, `results/runs.csv` | E4, E5, E6b | | recette BANC-1 | ✅ construit (recette BANC-1 à rejouer) |
 | E9 | Recette : captures automatiques, page HTML publiée (v1 : livrables E3-E8) | E7, E8 | | recette BANC-2 ; page publiée | ✅ publiée le 02/11 (v1 : répétition générale) |
 | E10 | **Point d'arrêt (mer. 04/11)** : passage court de chaque scénario sur A, B et C | E6, E6b, E9 | | sinon réduire le périmètre (ci-dessous) | ✅ 02/11 : 17 passages courts, aucun échec |
-| E11 | Campagne : S1 à S4 × A, B, C et S5 × B, 3 répétitions (≈ 1 h 30 par répétition ; skill `campagne-mesures`) | E10 | | résultats bruts versionnés, aucun passage invalide non expliqué | ⬜ |
+| E11 | Campagne : S1 à S4 × A, B, C et S5 × B, 3 répétitions (≈ 1 h 30 par répétition ; protocole [campagne.md](campagne.md), skill `campagne-mesures`) | E10 | | résultats bruts versionnés, aucun passage invalide non expliqué | ⬜ |
 | E12 | Résultats proposés : captures du passage médian, graphiques, onglet « Résultats » de la recette | E11 | | recette RES-S1 à RES-S5 | ⬜ |
 | E13 | Analyse et matrice de décision, **par l'équipe** ; ADR-001 final, limites, section « utilisation de l'IA » | E12 | équipe | recette DEC-1, DEC-2 ; skill `revue-adr` passée | ⬜ |
 | E14 | Relecture croisée et remise | E13 | équipe | remis | ⬜ |
@@ -89,3 +89,4 @@ Le but n'est pas de construire une plateforme, mais de **prendre une décision d
 | 02/11 | E10 : répétition générale courte (durées × 0,25, 1 passage) de S1 à S4, S4b sur A, B, C et S5 sur B | voir l'onglet « Résultats » de la recette ; **ce ne sont pas des preuves** |
 | 02/11 | Commit `eec1236` du travail en cours ; corrections des documents proposées par Marc : définitions alignées sur D12, C ajoutée dans D1, D3 et D5, dépendance E6b de E8, E9 et E10 remis « en cours » (marqués terminés trop tôt) | l'URL de la recette sera ajoutée aux références à la publication |
 | 02/11 | E10 et E9 : 17 passages courts réussis (A, B, C × S1 à S4 et S4b ; B × S5-off, S5-on) ; 92 captures relues par échantillon ; recette publiée | constats à discuter en recette, **pas des preuves** : (1) A-S2 et C-S2, k6 n'a pas envoyé 15 738 et 13 290 commandes (plafond de 2 000 VUs atteint ?) : validité de S2 à trancher avant la campagne ; (2) A-S3 et C-S3, environ 1 700 commandes payées mais rejetées : Order abandonne après 5 s alors que Payment finit par autoriser (paiement « fantôme ») ; (3) A-S4 et C-S4, 3 remboursements impossibles car Payment était en panne ; (4) B-S5-off, 2 438 effets en double, B-S5-on, 0 |
+| 02/11 | Protocole de campagne proposé (`docs/campagne.md`) | 4 points à trancher avant E11 : plan, plafond k6 pour S2, machine et créneau, S4b |
